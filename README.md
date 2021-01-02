@@ -1,6 +1,6 @@
 # 👏 Rehosting images to keep a good sender score
 
-### Just a script to rehost old images by new hosted images on imgBB (or whatever else) 🤝
+### Just a script to rehost old images by new hosted images on imgBB (or wherever else) 🤝
 
 
 ## 📖 Usage:
