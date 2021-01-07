@@ -38,7 +38,7 @@ def is_pixel(original_img):
         # ext = (".jpg", ".jpeg", ".png", ".gif")
         pil_img = Image.open(requests.get(original_img, stream=True).raw)
         img_width, img_height = pil_img.size
-        if (img_width in {0, 1} and img_height in {0, 1}):  # or not original_img.endswith(ext)
+        if (img_width in {0, 1} and img_height in {0, 1}): # or not original_img.endswith(ext)
             print("[$]\tInfo: Image is a pixel, skipping...")
             return True
         return False
@@ -46,6 +46,16 @@ def is_pixel(original_img):
         print("[x] Error while checking image size: " +
               str(err) + " (" + original_img + ")")
         return True
+
+
+def get_image(img_group):
+    '''
+        Returning the image found from regex either from "<img ... />" or "backgroung: url(...)"
+    '''
+    for img in img_group:
+        if img is not None:
+            return img
+    return None
 
 
 def fillfound():
@@ -57,18 +67,21 @@ def fillfound():
     file_nb = 0
     retry = 0
     max_retry = 10
-    pattern = re.compile(r'<img[\s\S].*?src\s*=\s*(?:\'|")(.+?)(?:\'|")')
+    pattern = re.compile(
+        r'<img \s*.*?src\s*=\s*(?:\'|")(.+?)(?:\'|")|:\s*.*url(?:\(\s*[\'"]?)(.*?)(?:[\'"]?\s*\))',
+        flags=re.I)
 
-    for img in re.finditer(pattern, str(source_code)):
-        if is_pixel(img.group(1)) is True:
+    for imgs in re.finditer(pattern, str(source_code)):
+        real_img = get_image(imgs.groups())
+        if is_pixel(real_img) is True:
             continue
         while True:
             try:
-                uploaded_img = upload_img(img.group(1))
+                uploaded_img = upload_img(real_img)
                 if uploaded_img is None:
                     continue
-                source_code = source_code.replace(img.group(1), uploaded_img)
-                print("[*] Image replaced: (%s)." % uploaded_img)
+                source_code = source_code.replace(real_img, uploaded_img)
+                print("[*] Image replaced: (%s)" % real_img)
                 file_nb += 1
                 break
             except IOError:
@@ -106,4 +119,3 @@ def main():
 if __name__ == "__main__":
     main()
     sys.exit()
-    
