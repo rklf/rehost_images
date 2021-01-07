@@ -6,6 +6,7 @@
 import sys
 from datetime import datetime
 import re
+import html
 import requests
 from PIL import Image
 
@@ -54,7 +55,7 @@ def get_image(img_group):
     '''
     for img in img_group:
         if img is not None:
-            return img
+            return html.unescape(img)
     return None
 
 
