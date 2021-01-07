@@ -55,7 +55,7 @@ def get_image(img_group):
     '''
     for img in img_group:
         if img is not None:
-            return html.unescape(img)
+            return img
     return None
 
 
@@ -73,16 +73,17 @@ def fillfound():
         flags=re.I)
 
     for imgs in re.finditer(pattern, str(source_code)):
-        real_img = get_image(imgs.groups())
-        if is_pixel(real_img) is True:
+        escaped_img = get_image(imgs.groups())
+        unescaped_img = html.unescape(escaped_img)
+        if is_pixel(unescaped_img) is True:
             continue
         while True:
             try:
-                uploaded_img = upload_img(real_img)
+                uploaded_img = upload_img(unescaped_img)
                 if uploaded_img is None:
                     continue
-                source_code = source_code.replace(real_img, uploaded_img)
-                print("[*] Image replaced: (%s)" % real_img)
+                source_code = source_code.replace(escaped_img, uploaded_img)
+                print("[*] Image replaced: (%s)" % unescaped_img)
                 file_nb += 1
                 break
             except IOError:
