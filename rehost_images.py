@@ -74,7 +74,7 @@ def fillfound():
 
     for imgs in re.finditer(pattern, str(source_code)):
         escaped_img = get_image(imgs.groups())
-        unescaped_img = html.unescape(escaped_img)
+        unescaped_img = html.unescape(escaped_img).replace(' ', '%20')
         if is_pixel(unescaped_img) is True:
             continue
         while True:
